@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>दिलखुश कैलकुलेटर - Dilkhush Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .app-card {
+      width: 100%;
+      max-width: 420px;
+      background: #1e293b;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      border: 1px solid #334155;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* App Header */
+    .header {
+      background: #0ea5e9;
+      padding: 16px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      border: none;
+      background: none;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #38bdf8;
+      border-bottom: 3px solid #38bdf8;
+      background: #1e293b;
+    }
+
+    .content-section {
+      display: none;
+      padding: 16px;
+    }
+
+    .content-section.active {
+      display: block;
+    }
+
+    /* Standard Calculator Screen */
+    .display {
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: right;
+      border: 1px solid #334155;
+    }
+
+    .display-history {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      min-height: 20px;
+      word-break: break-all;
+    }
+
+    .display-main {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #f8fafc;
+      word-break: break-all;
+      margin-top: 4px;
+    }
+
+    /* Keypad Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 14px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      background: #334155;
+      color: #f8fafc;
+      transition: active 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      background: #475569;
+    }
+
+    .btn-op {
+      background: #f59e0b;
+      color: #fff;
+    }
+    .btn-op:active { background: #d97706; }
+
+    .btn-action {
+      background: #ef4444;
+      color: #fff;
+    }
+    .btn-action:active { background: #dc2626; }
+
+    .btn-equal {
+      background: #10b981;
+      color: #fff;
+      grid-column: span 2;
+    }
+    .btn-equal:active { background: #059669; }
+
+    /* History List */
+    .history-drawer {
+      margin-top: 14px;
+      background: #0f172a;
+      border-radius: 14px;
+      padding: 12px;
+      max-height: 130px;
+      overflow-y: auto;
+      border: 1px solid #334155;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .history-item {
+      font-size: 0.85rem;
+      padding: 4px 0;
+      border-bottom: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+
+    .clear-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    /* Forms for EMI & Interest */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .calc-btn {
+      width: 100%;
+      padding: 12px;
+      background: #0ea5e9;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .calc-btn:active { background: #0284c7; }
+
+    .result-box {
+      margin-top: 14px;
+      padding: 12px;
+      background: #0f172a;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .result-box strong {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-card">
+    <div class="header">दिलखुश कैलकुलेटर</div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('calc')">कैलकुलेटर</button>
+      <button class="tab-btn" onclick="switchTab('emi')">EMI कैलकुलेटर</button>
+      <button class="tab-btn" onclick="switchTab('interest')">ब्याज कैलकुलेटर</button>
+    </div>
+
+    <!-- 1. Standard Calculator Tab -->
+    <div id="calc-tab" class="content-section active">
+      <div class="display">
+        <div class="display-history" id="calcExp"></div>
+        <div class="display-main" id="calcDisplay">0</div>
+      </div>
+
+      <div class="grid">
+        <button class="btn btn-action" onclick="clearCalc()">AC</button>
+        <button class="btn btn-action" onclick="deleteLast()">⌫</button>
+        <button class="btn btn-op" onclick="appendOp('%')">%</button>
+        <button class="btn btn-op" onclick="appendOp('/')">÷</button>
+
+        <button class="btn" onclick="appendNum('7')">7</button>
+        <button class="btn" onclick="appendNum('8')">8</button>
+        <button class="btn" onclick="appendNum('9')">9</button>
+        <button class="btn btn-op" onclick="appendOp('*')">×</button>
+
+        <button class="btn" onclick="appendNum('4')">4</button>
+        <button class="btn" onclick="appendNum('5')">5</button>
+        <button class="btn" onclick="appendNum('6')">6</button>
+        <button class="btn btn-op" onclick="appendOp('-')">−</button>
+
+        <button class="btn" onclick="appendNum('1')">1</button>
+        <button class="btn" onclick="appendNum('2')">2</button>
+        <button class="btn" onclick="appendNum('3')">3</button>
+        <button class="btn btn-op" onclick="appendOp('+')">+</button>
+
+        <button class="btn" onclick="appendNum('0')">0</button>
+        <button class="btn" onclick="appendNum('.')">.</button>
+        <button class="btn btn-equal" onclick="computeResult()">=</button>
+      </div>
+
+      <!-- History Section -->
+      <div class="history-drawer">
+        <div class="history-header">
+          <span>गणना इतिहास (History)</span>
+          <button class="clear-btn" onclick="clearHistory()">मिटाएं</button>
+        </div>
+        <div id="historyList">
+          <div style="color: #64748b; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. EMI Calculator Tab -->
+    <div id="emi-tab" class="content-section">
+      <div class="form-group">
+        <label>लोन की राशि (रुपये में):</label>
+        <input type="number" id="emiPrincipal" placeholder="उदा. 500000" />
+      </div>
+      <div class="form-group">
+        <label>सालाना ब्याज दर (%):</label>
+        <input type="number" step="0.1" id="emiRate" placeholder="उदा. 9.5" />
+      </div>
+      <div class="form-group">
+        <label>अवधि (महीनों में):</label>
+        <input type="number" id="emiMonths" placeholder="उदा. 36 (3 वर्ष)" />
+      </div>
+      <button class="calc-btn" onclick="calculateEMI()">मासिक EMI निकालें</button>
+
+      <div class="result-box" id="emiResult"></div>
+    </div>
+
+    <!-- 3. Interest Calculator Tab -->
+    <div id="interest-tab" class="content-section">
+      <div class="form-group">
+        <label>मूलधन (रुपये में):</label>
+        <input type="number" id="intPrincipal" placeholder="उदा. 50000" />
+      </div>
+      <div class="form-group">
+        <label>ब्याज दर (% प्रति माह या ₹ सैकड़ा):</label>
+        <input type="number" step="0.1" id="intRate" placeholder="उदा. 2% मासिक" />
+      </div>
+      <div class="form-group">
+        <label>समय (महीनों में):</label>
+        <input type="number" id="intMonths" placeholder="उदा. 12 महीने" />
+      </div>
+      <button class="calc-btn" onclick="calculateSimpleInterest()">ब्याज निकालें</button>
+
+      <div class="result-box" id="intResult"></div>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+
+      if (tabName === 'calc') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('calc-tab').classList.add('active');
+      } else if (tabName === 'emi') {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('emi-tab').classList.add('active');
+      } else {
+        document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+        document.getElementById('interest-tab').classList.add('active');
+      }
+    }
+
+    // Calculator Logic
+    let currentInput = '0';
+    let currentExp = '';
+    let history = JSON.parse(localStorage.getItem('dilkhush_calc_hist') || '[]');
+
+    function updateDisplay() {
+      document.getElementById('calcDisplay').innerText = currentInput;
+      document.getElementById('calcExp').innerText = currentExp;
+    }
+
+    function appendNum(num) {
+      if (currentInput === '0' && num !== '.') {
+        currentInput = num;
+      } else if (num === '.' && currentInput.includes('.')) {
+        return;
+      } else {
+        currentInput += num;
+      }
+      updateDisplay();
+    }
+
+    function appendOp(op) {
+      if (currentInput !== '') {
+        currentExp += ' ' + currentInput + ' ' + op;
+        currentInput = '0';
+        updateDisplay();
+      }
+    }
+
+    function clearCalc() {
+      currentInput = '0';
+      currentExp = '';
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      if (currentInput.length > 1) {
+        currentInput = currentInput.slice(0, -1);
+      } else {
+        currentInput = '0';
+      }
+      updateDisplay();
+    }
+
+    function computeResult() {
+      if (!currentExp && currentInput === '0') return;
+      let fullExpression = currentExp + ' ' + currentInput;
+      try {
+        let cleanExp = fullExpression.replace(/÷/g, '/').replace(/×/g, '*');
+        let res = Function('"use strict"; return (' + cleanExp + ')')();
+        res = Math.round(res * 1000000) / 1000000; // Rounding
+
+        addHistory(fullExpression + ' = ' + res);
+        currentInput = res.toString();
+        currentExp = '';
+        updateDisplay();
+      } catch (e) {
+        currentInput = 'Error';
+        updateDisplay();
+      }
+    }
+
+    function addHistory(record) {
+      history.unshift(record);
+      if (history.length > 15) history.pop();
+      localStorage.setItem('dilkhush_calc_hist', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('historyList');
+      if (history.length === 0) {
+        container.innerHTML = '<div style="color: #64748b; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>';
+        return;
+      }
+      container.innerHTML = history.map(item => `<div class="history-item">${item}</div>`).join('');
+    }
+
+    function clearHistory() {
+      history = [];
+      localStorage.removeItem('dilkhush_calc_hist');
+      renderHistory();
+    }
+    renderHistory();
+
+    // EMI Calculator
+    function calculateEMI() {
+      const P = parseFloat(document.getElementById('emiPrincipal').value);
+      const annualR = parseFloat(document.getElementById('emiRate').value);
+      const N = parseFloat(document.getElementById('emiMonths').value);
+      const resultBox = document.getElementById('emiResult');
+
+      if (!P || !annualR || !N) {
+        alert("कृपया सभी जानकारी सही से भरें।");
+        return;
+      }
+
+      const r = (annualR / 12) / 100;
+      const emi = (P * r * Math.pow(1 + r, N)) / (Math.pow(1 + r, N) - 1);
+      const totalPayable = emi * N;
+      const totalInterest = totalPayable - P;
+
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div>हर महीने की EMI: <strong>₹${Math.round(emi).toLocaleString('en-IN')}</strong></div>
+        <div>कुल ब्याज: <strong>₹${Math.round(totalInterest).toLocaleString('en-IN')}</strong></div>
+        <div>कुल भुगतान राशि: <strong>₹${Math.round(totalPayable).toLocaleString('en-IN')}</strong></div>
+      `;
+    }
+
+    // Simple Monthly Interest Calculator (ग्रामीण/बाजार का देसी ब्याज)
+    function calculateSimpleInterest() {
+      const P = parseFloat(document.getElementById('intPrincipal').value);
+      const monthlyRate = parseFloat(document.getElementById('intRate').value);
+      const months = parseFloat(document.getElementById('intMonths').value);
+      const resultBox = document.getElementById('intResult');
+
+      if (!P || !monthlyRate || !months) {
+        alert("कृपया सभी जानकारी सही से भरें।");
+        return;
+      }
+
+      const interest = (P * monthlyRate * months) / 100;
+      const totalAmount = P + interest;
+
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div>कुल ब्याज: <strong>₹${Math.round(interest).toLocaleString('en-IN')}</strong></div>
+        <div>कुल वापस देने योग्य राशि: <strong>₹${Math.round(totalAmount).toLocaleString('en-IN')}</strong></div>
+      `;
+    }
+  </script>
+</body>
+</html>

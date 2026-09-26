@@ -11,6 +11,12 @@
       padding: 0;
       font-family: 'Segoe UI', Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
+
+      /* टेक्स्ट सिलेक्शन और कॉपी रोकने के नियम */
+      -webkit-user-select: none;  /* Safari/Chrome */
+      -moz-user-select: none;     /* Firefox */
+      -ms-user-select: none;      /* IE10+/Edge */
+      user-select: none;          /* Modern Browsers */
     }
 
     body {
@@ -205,6 +211,12 @@
       color: #fff;
       font-size: 1rem;
       outline: none;
+
+      /* इनपुट फील्ड में यूजर को टाइप और कर्सर मूव करने की अनुमति */
+      -webkit-user-select: auto;
+      -moz-user-select: auto;
+      -ms-user-select: auto;
+      user-select: auto;
     }
 
     .calc-btn {
@@ -237,7 +249,7 @@
     }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
 
   <div class="app-card">
     <div class="header">दिलखुश कैलकुलेटर</div>
@@ -334,6 +346,17 @@
   </div>
 
   <script>
+    // सिलेक्शन, कॉपी और ड्रैग रोकने के इवेंट लिसनर
+    document.addEventListener('selectstart', function(e) {
+      if (e.target.tagName !== 'INPUT') {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+    });
+
     // Tab switching
     function switchTab(tabName) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -401,7 +424,7 @@
       try {
         let cleanExp = fullExpression.replace(/÷/g, '/').replace(/×/g, '*');
         let res = Function('"use strict"; return (' + cleanExp + ')')();
-        res = Math.round(res * 1000000) / 1000000; // Rounding
+        res = Math.round(res * 1000000) / 1000000;
 
         addHistory(fullExpression + ' = ' + res);
         currentInput = res.toString();
@@ -461,7 +484,7 @@
       `;
     }
 
-    // Simple Monthly Interest Calculator (ग्रामीण/बाजार का देसी ब्याज)
+    // Simple Monthly Interest Calculator
     function calculateSimpleInterest() {
       const P = parseFloat(document.getElementById('intPrincipal').value);
       const monthlyRate = parseFloat(document.getElementById('intRate').value);

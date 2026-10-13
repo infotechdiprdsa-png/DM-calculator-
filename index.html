@@ -334,8 +334,12 @@
         <input type="number" step="0.1" id="intRate" placeholder="उदा. 2% मासिक" />
       </div>
       <div class="form-group">
-        <label>समय (महीनों में):</label>
-        <input type="number" id="intMonths" placeholder="उदा. 12 महीने" />
+        <label>समय - महीने (Months):</label>
+        <input type="number" id="intMonths" placeholder="उदा. 12" />
+      </div>
+      <div class="form-group">
+        <label>समय - अतिरिक्त दिन (Days):</label>
+        <input type="number" id="intDays" placeholder="उदा. 15" />
       </div>
       <button class="calc-btn" onclick="calculateSimpleInterest()">ब्याज निकालें</button>
 
@@ -513,24 +517,33 @@
       `;
     }
 
-    // Simple Monthly Interest Calculator
+    // Monthly & Daily Interest Calculator
     function calculateSimpleInterest() {
-      const P = parseFloat(document.getElementById('intPrincipal').value);
-      const monthlyRate = parseFloat(document.getElementById('intRate').value);
-      const months = parseFloat(document.getElementById('intMonths').value);
+      const P = parseFloat(document.getElementById('intPrincipal').value) || 0;
+      const monthlyRate = parseFloat(document.getElementById('intRate').value) || 0;
+      const months = parseFloat(document.getElementById('intMonths').value) || 0;
+      const days = parseFloat(document.getElementById('intDays').value) || 0;
       const resultBox = document.getElementById('intResult');
 
-      if (!P || !monthlyRate || !months) {
-        alert("कृपया सभी जानकारी सही से भरें।");
+      if (P <= 0 || monthlyRate <= 0 || (months === 0 && days === 0)) {
+        alert("कृपया मूलधन, ब्याज दर और सही समय (महीने या दिन) दर्ज करें।");
         return;
       }
 
-      const interest = (P * monthlyRate * months) / 100;
-      const totalAmount = P + interest;
+      // महीने का ब्याज + दिनों का ब्याज (एक महीने को 30 दिन मानकर)
+      const interestFromMonths = (P * monthlyRate * months) / 100;
+      const dailyRate = monthlyRate / 30; 
+      const interestFromDays = (P * dailyRate * days) / 100;
+
+      const totalInterest = interestFromMonths + interestFromDays;
+      const totalAmount = P + totalInterest;
 
       resultBox.style.display = 'block';
       resultBox.innerHTML = `
-        <div>कुल ब्याज: <strong>₹${Math.round(interest).toLocaleString('en-IN')}</strong></div>
+        <div>महीनों का ब्याज: <strong>₹${Math.round(interestFromMonths).toLocaleString('en-IN')}</strong></div>
+        <div>दिनों का ब्याज: <strong>₹${Math.round(interestFromDays).toLocaleString('en-IN')}</strong></div>
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin: 8px 0;">
+        <div>कुल ब्याज: <strong>₹${Math.round(totalInterest).toLocaleString('en-IN')}</strong></div>
         <div>कुल वापस देने योग्य राशि: <strong>₹${Math.round(totalAmount).toLocaleString('en-IN')}</strong></div>
       `;
     }

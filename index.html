@@ -3,25 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>दिलखुश कैलकुलेटर - Dilkhush Calculator</title>
+  <title>स्मार्ट कैलकुलेटर - Smart Calculator</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
 
       /* टेक्स्ट सिलेक्शन और कॉपी रोकने के नियम */
-      -webkit-user-select: none;  /* Safari/Chrome */
-      -moz-user-select: none;     /* Firefox */
-      -ms-user-select: none;      /* IE10+/Edge */
-      user-select: none;          /* Modern Browsers */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
     }
 
     body {
-      background-color: #0f172a;
-      color: #f8fafc;
+      background-color: #f1f5f9;
+      color: #1e293b;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -32,21 +32,21 @@
     .app-card {
       width: 100%;
       max-width: 420px;
-      background: #1e293b;
+      background: #ffffff;
       border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-      border: 1px solid #334155;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
       display: flex;
       flex-direction: column;
     }
 
     /* App Header */
     .header {
-      background: #0ea5e9;
+      background: #0284c7;
       padding: 16px;
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: bold;
       letter-spacing: 0.5px;
       color: #fff;
@@ -55,8 +55,8 @@
     /* Tabs */
     .tabs {
       display: flex;
-      background: #0f172a;
-      border-bottom: 1px solid #334155;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
     }
 
     .tab-btn {
@@ -64,17 +64,17 @@
       padding: 12px 6px;
       border: none;
       background: none;
-      color: #94a3b8;
-      font-size: 0.9rem;
+      color: #64748b;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s;
     }
 
     .tab-btn.active {
-      color: #38bdf8;
-      border-bottom: 3px solid #38bdf8;
-      background: #1e293b;
+      color: #0284c7;
+      border-bottom: 3px solid #0284c7;
+      background: #ffffff;
     }
 
     .content-section {
@@ -88,17 +88,17 @@
 
     /* Standard Calculator Screen */
     .display {
-      background: #0f172a;
+      background: #f8fafc;
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 16px;
       text-align: right;
-      border: 1px solid #334155;
+      border: 1px solid #e2e8f0;
     }
 
     .display-history {
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: #64748b;
       min-height: 20px;
       word-break: break-all;
     }
@@ -106,7 +106,7 @@
     .display-main {
       font-size: 2rem;
       font-weight: bold;
-      color: #f8fafc;
+      color: #0f172a;
       word-break: break-all;
       margin-top: 4px;
     }
@@ -125,27 +125,27 @@
       border-radius: 14px;
       border: none;
       cursor: pointer;
-      background: #334155;
-      color: #f8fafc;
-      transition: active 0.1s;
+      background: #f1f5f9;
+      color: #334155;
+      transition: 0.1s;
     }
 
     .btn:active {
       transform: scale(0.95);
-      background: #475569;
+      background: #e2e8f0;
     }
 
     .btn-op {
-      background: #f59e0b;
-      color: #fff;
+      background: #fef3c7;
+      color: #d97706;
     }
-    .btn-op:active { background: #d97706; }
+    .btn-op:active { background: #fde68a; }
 
     .btn-action {
-      background: #ef4444;
-      color: #fff;
+      background: #fee2e2;
+      color: #dc2626;
     }
-    .btn-action:active { background: #dc2626; }
+    .btn-action:active { background: #fecaca; }
 
     .btn-equal {
       background: #10b981;
@@ -157,12 +157,12 @@
     /* History List */
     .history-drawer {
       margin-top: 14px;
-      background: #0f172a;
+      background: #f8fafc;
       border-radius: 14px;
       padding: 12px;
-      max-height: 130px;
+      max-height: 120px;
       overflow-y: auto;
-      border: 1px solid #334155;
+      border: 1px solid #e2e8f0;
     }
 
     .history-header {
@@ -170,7 +170,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 0.8rem;
-      color: #38bdf8;
+      color: #0284c7;
       margin-bottom: 6px;
       font-weight: bold;
     }
@@ -178,19 +178,19 @@
     .history-item {
       font-size: 0.85rem;
       padding: 4px 0;
-      border-bottom: 1px solid #1e293b;
-      color: #cbd5e1;
+      border-bottom: 1px solid #e2e8f0;
+      color: #475569;
     }
 
     .clear-btn {
-      color: #ef4444;
+      color: #dc2626;
       background: none;
       border: none;
       font-size: 0.75rem;
       cursor: pointer;
     }
 
-    /* Forms for EMI & Interest */
+    /* Forms for Age & Interest */
     .form-group {
       margin-bottom: 12px;
     }
@@ -198,17 +198,18 @@
     .form-group label {
       display: block;
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: #475569;
       margin-bottom: 4px;
+      font-weight: 500;
     }
 
     .form-group input {
       width: 100%;
       padding: 10px 12px;
       border-radius: 10px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #fff;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
       font-size: 1rem;
       outline: none;
 
@@ -222,7 +223,7 @@
     .calc-btn {
       width: 100%;
       padding: 12px;
-      background: #0ea5e9;
+      background: #0284c7;
       color: white;
       font-size: 1rem;
       font-weight: bold;
@@ -231,33 +232,34 @@
       cursor: pointer;
       margin-top: 6px;
     }
-    .calc-btn:active { background: #0284c7; }
+    .calc-btn:active { background: #0369a1; }
 
     .result-box {
       margin-top: 14px;
       padding: 12px;
-      background: #0f172a;
+      background: #f8fafc;
       border-radius: 12px;
-      border: 1px solid #334155;
+      border: 1px solid #e2e8f0;
       font-size: 0.9rem;
       line-height: 1.6;
       display: none;
+      color: #334155;
     }
 
     .result-box strong {
-      color: #38bdf8;
+      color: #0284c7;
     }
   </style>
 </head>
 <body oncontextmenu="return false;" oncopy="return false;" oncut="return false;">
 
   <div class="app-card">
-    <div class="header">दिलखुश कैलकुलेटर</div>
+    <div class="header">स्मार्ट कैलकुलेटर</div>
 
     <!-- Navigation Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('calc')">कैलकुलेटर</button>
-      <button class="tab-btn" onclick="switchTab('emi')">EMI कैलकुलेटर</button>
+      <button class="tab-btn" onclick="switchTab('age')">आयु कैलकुलेटर</button>
       <button class="tab-btn" onclick="switchTab('interest')">ब्याज कैलकुलेटर</button>
     </div>
 
@@ -301,28 +303,24 @@
           <button class="clear-btn" onclick="clearHistory()">मिटाएं</button>
         </div>
         <div id="historyList">
-          <div style="color: #64748b; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>
+          <div style="color: #94a3b8; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>
         </div>
       </div>
     </div>
 
-    <!-- 2. EMI Calculator Tab -->
-    <div id="emi-tab" class="content-section">
+    <!-- 2. Age Calculator Tab -->
+    <div id="age-tab" class="content-section">
       <div class="form-group">
-        <label>लोन की राशि (रुपये में):</label>
-        <input type="number" id="emiPrincipal" placeholder="उदा. 500000" />
+        <label>जन्म तिथि (Date of Birth):</label>
+        <input type="date" id="birthDate" />
       </div>
       <div class="form-group">
-        <label>सालाना ब्याज दर (%):</label>
-        <input type="number" step="0.1" id="emiRate" placeholder="उदा. 9.5" />
+        <label>इस तारीख तक आयु निकालें:</label>
+        <input type="date" id="targetDate" />
       </div>
-      <div class="form-group">
-        <label>अवधि (महीनों में):</label>
-        <input type="number" id="emiMonths" placeholder="उदा. 36 (3 वर्ष)" />
-      </div>
-      <button class="calc-btn" onclick="calculateEMI()">मासिक EMI निकालें</button>
+      <button class="calc-btn" onclick="calculateAge()">आयु की गणना करें</button>
 
-      <div class="result-box" id="emiResult"></div>
+      <div class="result-box" id="ageResult"></div>
     </div>
 
     <!-- 3. Interest Calculator Tab -->
@@ -346,6 +344,13 @@
   </div>
 
   <script>
+    // आज की तारीख डिफ़ॉल्ट रूप से सेट करना Age Calculator के लिए
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const targetDateInput = document.getElementById('targetDate');
+      if(targetDateInput) targetDateInput.value = today;
+    });
+
     // सिलेक्शन, कॉपी और ड्रैग रोकने के इवेंट लिसनर
     document.addEventListener('selectstart', function(e) {
       if (e.target.tagName !== 'INPUT') {
@@ -365,9 +370,9 @@
       if (tabName === 'calc') {
         document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
         document.getElementById('calc-tab').classList.add('active');
-      } else if (tabName === 'emi') {
+      } else if (tabName === 'age') {
         document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-        document.getElementById('emi-tab').classList.add('active');
+        document.getElementById('age-tab').classList.add('active');
       } else {
         document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
         document.getElementById('interest-tab').classList.add('active');
@@ -377,7 +382,7 @@
     // Calculator Logic
     let currentInput = '0';
     let currentExp = '';
-    let history = JSON.parse(localStorage.getItem('dilkhush_calc_hist') || '[]');
+    let history = JSON.parse(localStorage.getItem('smart_calc_hist') || '[]');
 
     function updateDisplay() {
       document.getElementById('calcDisplay').innerText = currentInput;
@@ -439,14 +444,14 @@
     function addHistory(record) {
       history.unshift(record);
       if (history.length > 15) history.pop();
-      localStorage.setItem('dilkhush_calc_hist', JSON.stringify(history));
+      localStorage.setItem('smart_calc_hist', JSON.stringify(history));
       renderHistory();
     }
 
     function renderHistory() {
       const container = document.getElementById('historyList');
       if (history.length === 0) {
-        container.innerHTML = '<div style="color: #64748b; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>';
+        container.innerHTML = '<div style="color: #94a3b8; font-size: 0.8rem;">कोई पुराना हिसाब नहीं है।</div>';
         return;
       }
       container.innerHTML = history.map(item => `<div class="history-item">${item}</div>`).join('');
@@ -454,33 +459,57 @@
 
     function clearHistory() {
       history = [];
-      localStorage.removeItem('dilkhush_calc_hist');
+      localStorage.removeItem('smart_calc_hist');
       renderHistory();
     }
     renderHistory();
 
-    // EMI Calculator
-    function calculateEMI() {
-      const P = parseFloat(document.getElementById('emiPrincipal').value);
-      const annualR = parseFloat(document.getElementById('emiRate').value);
-      const N = parseFloat(document.getElementById('emiMonths').value);
-      const resultBox = document.getElementById('emiResult');
+    // Age Calculator Logic
+    function calculateAge() {
+      const birthVal = document.getElementById('birthDate').value;
+      const targetVal = document.getElementById('targetDate').value;
+      const resultBox = document.getElementById('ageResult');
 
-      if (!P || !annualR || !N) {
-        alert("कृपया सभी जानकारी सही से भरें।");
+      if (!birthVal || !targetVal) {
+        alert("कृपया जन्म तिथि और लक्ष्य तिथि दोनों चुनें।");
         return;
       }
 
-      const r = (annualR / 12) / 100;
-      const emi = (P * r * Math.pow(1 + r, N)) / (Math.pow(1 + r, N) - 1);
-      const totalPayable = emi * N;
-      const totalInterest = totalPayable - P;
+      const birthDate = new Date(birthVal);
+      const targetDate = new Date(targetVal);
+
+      if (birthDate > targetDate) {
+        alert("जन्म तिथि, लक्ष्य तिथि से बाद की नहीं हो सकती।");
+        return;
+      }
+
+      let years = targetDate.getFullYear() - birthDate.getFullYear();
+      let months = targetDate.getMonth() - birthDate.getMonth();
+      let days = targetDate.getDate() - birthDate.getDate();
+
+      if (days < 0) {
+        months--;
+        const prevMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 0);
+        days += prevMonth.getDate();
+      }
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      const diffTime = Math.abs(targetDate - birthDate);
+      const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const totalMonths = (years * 12) + months;
+      const totalWeeks = Math.floor(totalDays / 7);
 
       resultBox.style.display = 'block';
       resultBox.innerHTML = `
-        <div>हर महीने की EMI: <strong>₹${Math.round(emi).toLocaleString('en-IN')}</strong></div>
-        <div>कुल ब्याज: <strong>₹${Math.round(totalInterest).toLocaleString('en-IN')}</strong></div>
-        <div>कुल भुगतान राशि: <strong>₹${Math.round(totalPayable).toLocaleString('en-IN')}</strong></div>
+        <div>सटीक आयु: <strong>${years} वर्ष, ${months} महीने, ${days} दिन</strong></div>
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin: 8px 0;">
+        <div>कुल महीने: <strong>${totalMonths.toLocaleString('en-IN')}</strong></div>
+        <div>कुल सप्ताह: <strong>${totalWeeks.toLocaleString('en-IN')}</strong></div>
+        <div>कुल दिन: <strong>${totalDays.toLocaleString('en-IN')}</strong></div>
       `;
     }
 

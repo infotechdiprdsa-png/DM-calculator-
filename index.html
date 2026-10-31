@@ -13,11 +13,8 @@
   --text:#172554;
   --muted:#64748b;
   --primary:#635bff;
-  --secondary:#8b5cf6;
   --soft:#f1f5ff;
   --border:#e2e8f0;
-  --green:#059669;
-  --red:#ef4444;
   --shadow:0 12px 35px rgba(30,41,59,.09);
 }
 body.dark {
@@ -25,21 +22,34 @@ body.dark {
   --card:#151f32;
   --text:#f1f5f9;
   --muted:#9caec5;
-  --primary:#8b83ff;
-  --secondary:#a78bfa;
   --soft:#202c42;
   --border:#2c3a50;
-  --green:#34d399;
-  --red:#fb7185;
   --shadow:0 12px 35px rgba(0,0,0,.25);
 }
+
+/* स्क्रीन पर टेक्स्ट सिलेक्शन और लॉन्ग प्रेस बंद */
 * {
   box-sizing:border-box;
   margin:0;
   padding:0;
   font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
   -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
 }
+
+input, select, textarea {
+  -webkit-user-select:text !important;
+  -moz-user-select:text !important;
+  -ms-user-select:text !important;
+  user-select:text !important;
+  -webkit-touch-callout:default;
+}
+
+button {font:inherit;cursor:pointer}
 body {
   min-height:100vh;
   background:var(--bg);
@@ -50,8 +60,6 @@ body {
   align-items:center;
   transition:background .3s,color .3s;
 }
-button,input,select {font:inherit}
-button {cursor:pointer}
 .app {
   width:100%;
   max-width:460px;
@@ -74,7 +82,6 @@ button {cursor:pointer}
 .brand {
   font-size:21px;
   font-weight:800;
-  letter-spacing:.3px;
 }
 .brand small {
   display:block;
@@ -139,7 +146,7 @@ button {cursor:pointer}
   border-radius:19px;
   margin-bottom:14px;
   text-align:right;
-  min-height:115px;
+  min-height:105px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -155,21 +162,6 @@ button {cursor:pointer}
   font-weight:800;
   overflow-wrap:anywhere;
   margin-top:5px;
-  color:var(--text);
-}
-.display-actions {
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:10px;
-}
-.small-btn {
-  background:var(--card);
-  border:1px solid var(--border);
-  color:var(--muted);
-  padding:6px 12px;
-  border-radius:9px;
-  font-size:11px;
 }
 .keypad {
   display:grid;
@@ -209,7 +201,6 @@ body.dark .key.danger {
   color:white;
   grid-column:span 2;
 }
-.key.zero {grid-column:span 1}
 .key.special {
   background:#dbeafe;
   color:#2563eb;
@@ -244,11 +235,10 @@ body.dark .key.special {
   color:var(--muted);
   overflow-wrap:anywhere;
 }
-.history-item:last-child {border:0}
 .clear-history {
   border:0;
   background:transparent;
-  color:var(--red);
+  color:#ef4444;
   font-size:11px;
   font-weight:700;
 }
@@ -295,7 +285,6 @@ body.dark .key.special {
   font-size:14px;
   font-weight:800;
   margin-top:5px;
-  transition:.15s;
 }
 .result {
   display:none;
@@ -339,504 +328,475 @@ body.dark .key.special {
 </style>
 </head>
 
-<body>
+<body oncontextmenu="return false;">
+
 <div class="app">
+<header class="header">
+  <div class="header-top">
+    <div class="brand">
+      ✦ SMART CALCULATOR
+      <small>PREMIUM EDITION • ALL IN ONE</small>
+    </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+  </div>
+  <div class="header-sub">आपका स्मार्ट डिजिटल कैलकुलेटर</div>
+</header>
 
-  <header class="header">
-    <div class="header-top">
-      <div class="brand">
-        ✦ SMART CALCULATOR
-        <small>PREMIUM EDITION • ALL IN ONE</small>
-      </div>
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
-    </div>
-    <div class="header-sub">आपका स्मार्ट डिजिटल कैलकुलेटर</div>
-  </header>
+<nav class="tabs">
+  <button class="tab active" data-tab="calc">🧮 कैलकुलेटर</button>
+  <button class="tab" data-tab="age">🎂 आयु</button>
+  <button class="tab" data-tab="interest">💰 ब्याज</button>
+  <button class="tab" data-tab="gst">📊 GST</button>
+  <button class="tab" data-tab="emi">🏦 EMI</button>
+</nav>
 
-  <nav class="tabs">
-    <button class="tab active" data-tab="calc">🧮 कैलकुलेटर</button>
-    <button class="tab" data-tab="age">🎂 आयु</button>
-    <button class="tab" data-tab="interest">💰 ब्याज</button>
-    <button class="tab" data-tab="gst">📊 GST</button>
-    <button class="tab" data-tab="emi">🏦 EMI</button>
-  </nav>
+<!-- CALCULATOR -->
+<section class="section active" id="calc">
+  <div class="display">
+    <div class="expression" id="expression">गणना शुरू करें</div>
+    <div class="answer" id="answer">0</div>
+  </div>
 
-  <!-- CALCULATOR -->
-  <section class="section active" id="calc">
-    <div class="display">
-      <div class="expression" id="expression">गणना शुरू करें</div>
-      <div class="answer" id="answer">0</div>
-      <div class="display-actions">
-        <button class="small-btn" onclick="copyAnswer()">📋 कॉपी</button>
-        <button class="small-btn" onclick="squareRoot()">√ Root</button>
-        <button class="small-btn" onclick="squareNumber()">x²</button>
-      </div>
-    </div>
+  <div class="keypad">
+    <button class="key danger" onclick="clearCalc()">AC</button>
+    <button class="key danger" onclick="backspace()">⌫</button>
+    <button class="key op" onclick="press('%')">%</button>
+    <button class="key op" onclick="press('/')">÷</button>
 
-    <div class="keypad">
-      <button class="key danger" onclick="clearCalc()">AC</button>
-      <button class="key danger" onclick="backspace()">⌫</button>
-      <button class="key op" onclick="press('%')">%</button>
-      <button class="key op" onclick="press('/')">÷</button>
+    <button class="key" onclick="press('7')">7</button>
+    <button class="key" onclick="press('8')">8</button>
+    <button class="key" onclick="press('9')">9</button>
+    <button class="key op" onclick="press('*')">×</button>
 
-      <button class="key" onclick="press('7')">7</button>
-      <button class="key" onclick="press('8')">8</button>
-      <button class="key" onclick="press('9')">9</button>
-      <button class="key op" onclick="press('*')">×</button>
+    <button class="key" onclick="press('4')">4</button>
+    <button class="key" onclick="press('5')">5</button>
+    <button class="key" onclick="press('6')">6</button>
+    <button class="key op" onclick="press('-')">−</button>
 
-      <button class="key" onclick="press('4')">4</button>
-      <button class="key" onclick="press('5')">5</button>
-      <button class="key" onclick="press('6')">6</button>
-      <button class="key op" onclick="press('-')">−</button>
+    <button class="key" onclick="press('1')">1</button>
+    <button class="key" onclick="press('2')">2</button>
+    <button class="key" onclick="press('3')">3</button>
+    <button class="key op" onclick="press('+')">+</button>
 
-      <button class="key" onclick="press('1')">1</button>
-      <button class="key" onclick="press('2')">2</button>
-      <button class="key" onclick="press('3')">3</button>
-      <button class="key op" onclick="press('+')">+</button>
+    <button class="key special" onclick="press('(')">(</button>
+    <button class="key" onclick="press('0')">0</button>
+    <button class="key" onclick="press('.')">.</button>
+    <button class="key special" onclick="press(')')">)</button>
 
-      <button class="key special" onclick="press('(')">(</button>
-      <button class="key" onclick="press('0')">0</button>
-      <button class="key" onclick="press('.')">.</button>
-      <button class="key special" onclick="press(')')">)</button>
+    <button class="key op" onclick="press('00')">00</button>
+    <button class="key equal" onclick="calculate()">= RESULT</button>
+  </div>
 
-      <button class="key op" onclick="press('00')">00</button>
-      <button class="key equal" onclick="calculate()">= RESULT</button>
+  <div class="history">
+    <div class="history-head">
+      <span>📜 गणना इतिहास</span>
+      <button class="clear-history" onclick="clearHistory()">सभी मिटाएं</button>
     </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+</section>
 
-    <div class="history">
-      <div class="history-head">
-        <span>📜 गणना इतिहास</span>
-        <button class="clear-history" onclick="clearHistory()">सभी मिटाएं</button>
-      </div>
-      <div class="history-list" id="historyList"></div>
-    </div>
-  </section>
+<!-- AGE -->
+<section class="section" id="age">
+  <div class="form-title">🎂 आयु कैलकुलेटर</div>
+  <div class="form-group">
+    <label>जन्म तारीख</label>
+    <input type="date" id="birthDate">
+  </div>
+  <div class="form-group">
+    <label>किस तारीख तक आयु निकालें</label>
+    <input type="date" id="targetDate">
+  </div>
+  <button class="action" onclick="calculateAge()">आयु की गणना करें</button>
+  <div class="result" id="ageResult"></div>
+</section>
 
-  <!-- AGE CALCULATOR -->
-  <section class="section" id="age">
-    <div class="form-title">🎂 आयु कैलकुलेटर</div>
-    <div class="form-group">
-      <label>जन्म तारीख</label>
-      <input type="date" id="birthDate">
-    </div>
-    <div class="form-group">
-      <label>किस तारीख तक आयु निकालें</label>
-      <input type="date" id="targetDate">
-    </div>
-    <button class="action" onclick="calculateAge()">आयु की गणना करें</button>
-    <div class="result" id="ageResult"></div>
-  </section>
+<!-- INTEREST -->
+<section class="section" id="interest">
+  <div class="form-title">💰 ब्याज कैलकुलेटर</div>
+  <div class="form-group">
+    <label>मूलधन (₹)</label>
+    <input type="number" id="principal" min="0" placeholder="उदाहरण: 50000">
+  </div>
+  <div class="form-group">
+    <label>मासिक ब्याज दर (%)</label>
+    <input type="number" id="rate" min="0" step="any" placeholder="उदाहरण: 2">
+  </div>
+  <div class="form-group">
+    <label>कुल महीने</label>
+    <input type="number" id="months" min="0" placeholder="उदाहरण: 12">
+  </div>
+  <div class="form-group">
+    <label>अतिरिक्त दिन</label>
+    <input type="number" id="days" min="0" placeholder="उदाहरण: 15">
+  </div>
+  <button class="action" onclick="calculateInterest()">ब्याज निकालें</button>
+  <div class="result" id="interestResult"></div>
+</section>
 
-  <!-- INTEREST CALCULATOR -->
-  <section class="section" id="interest">
-    <div class="form-title">💰 ब्याज कैलकुलेटर</div>
-    <div class="form-group">
-      <label>मूलधन (₹)</label>
-      <input type="number" id="principal" min="0" placeholder="उदाहरण: 50000">
-    </div>
-    <div class="form-group">
-      <label>मासिक ब्याज दर (%)</label>
-      <input type="number" id="rate" min="0" step="any" placeholder="उदाहरण: 2">
-    </div>
-    <div class="form-group">
-      <label>कुल महीने</label>
-      <input type="number" id="months" min="0" placeholder="उदाहरण: 12">
-    </div>
-    <div class="form-group">
-      <label>अतिरिक्त दिन</label>
-      <input type="number" id="days" min="0" placeholder="उदाहरण: 15">
-    </div>
-    <button class="action" onclick="calculateInterest()">ब्याज निकालें</button>
-    <div class="result" id="interestResult"></div>
-  </section>
+<!-- GST -->
+<section class="section" id="gst">
+  <div class="form-title">📊 GST कैलकुलेटर</div>
+  <div class="form-group">
+    <label>राशि (₹)</label>
+    <input type="number" id="gstAmount" min="0" placeholder="राशि दर्ज करें">
+  </div>
+  <div class="form-group">
+    <label>GST प्रतिशत</label>
+    <select id="gstRate">
+      <option value="5">5% GST</option>
+      <option value="12">12% GST</option>
+      <option value="18" selected>18% GST</option>
+      <option value="28">28% GST</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>गणना का प्रकार</label>
+    <select id="gstType">
+      <option value="add">राशि में GST जोड़ें</option>
+      <option value="remove">राशि से GST हटाएं</option>
+    </select>
+  </div>
+  <button class="action" onclick="calculateGST()">GST कैलकुलेट करें</button>
+  <div class="result" id="gstResult"></div>
+</section>
 
-  <!-- GST CALCULATOR -->
-  <section class="section" id="gst">
-    <div class="form-title">📊 GST कैलकुलेटर</div>
-    <div class="form-group">
-      <label>राशि (₹)</label>
-      <input type="number" id="gstAmount" min="0" placeholder="राशि दर्ज करें">
-    </div>
-    <div class="form-group">
-      <label>GST प्रतिशत</label>
-      <select id="gstRate">
-        <option value="5">5% GST</option>
-        <option value="12">12% GST</option>
-        <option value="18" selected>18% GST</option>
-        <option value="28">28% GST</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>गणना का प्रकार</label>
-      <select id="gstType">
-        <option value="add">राशि में GST जोड़ें</option>
-        <option value="remove">राशि से GST हटाएं</option>
-      </select>
-    </div>
-    <button class="action" onclick="calculateGST()">GST कैलकुलेट करें</button>
-    <div class="result" id="gstResult"></div>
-  </section>
+<!-- EMI -->
+<section class="section" id="emi">
+  <div class="form-title">🏦 EMI कैलकुलेटर</div>
+  <div class="form-group">
+    <label>लोन की राशि (₹)</label>
+    <input type="number" id="loan" min="0" placeholder="उदाहरण: 500000">
+  </div>
+  <div class="form-group">
+    <label>वार्षिक ब्याज दर (%)</label>
+    <input type="number" id="emiRate" min="0" step="any" placeholder="उदाहरण: 10">
+  </div>
+  <div class="form-group">
+    <label>लोन अवधि (वर्ष)</label>
+    <input type="number" id="emiYears" min="0" step="any" placeholder="उदाहरण: 5">
+  </div>
+  <button class="action" onclick="calculateEMI()">EMI निकालें</button>
+  <div class="result" id="emiResult"></div>
+</section>
 
-  <!-- EMI CALCULATOR -->
-  <section class="section" id="emi">
-    <div class="form-title">🏦 EMI कैलकुलेटर</div>
-    <div class="form-group">
-      <label>लोन की राशि (₹)</label>
-      <input type="number" id="loan" min="0" placeholder="उदाहरण: 500000">
-    </div>
-    <div class="form-group">
-      <label>वार्षिक ब्याज दर (%)</label>
-      <input type="number" id="emiRate" min="0" step="any" placeholder="उदाहरण: 10">
-    </div>
-    <div class="form-group">
-      <label>लोन अवधि (वर्ष)</label>
-      <input type="number" id="emiYears" min="0" step="any" placeholder="उदाहरण: 5">
-    </div>
-    <button class="action" onclick="calculateEMI()">EMI निकालें</button>
-    <div class="result" id="emiResult"></div>
-  </section>
-
-  <footer class="footer">
-    ✦ POWERED BY <span>SMART CALCULATOR</span> ✦
-    <br>Fast • Secure • Easy to Use
-  </footer>
+<footer class="footer">
+  ✦ POWERED BY <span>SMART CALCULATOR</span> ✦
+  <br>Fast • Secure • Easy to Use
+</footer>
 </div>
 
 <script>
-/* ---------------- THEME ---------------- */
+
+/* COPY, CUT, SELECTION और CONTEXT MENU बंद */
+document.addEventListener('contextmenu', function(e) {
+  if(!e.target.closest('input,select,textarea')) {
+    e.preventDefault();
+  }
+});
+
+['copy','cut'].forEach(function(eventName) {
+  document.addEventListener(eventName,function(e) {
+    e.preventDefault();
+  });
+});
+
+document.addEventListener('selectstart',function(e) {
+  if(!e.target.closest('input,select,textarea')) {
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('dragstart',function(e) {
+  e.preventDefault();
+});
+
+/* THEME */
 function toggleTheme() {
   document.body.classList.toggle('dark');
   const dark = document.body.classList.contains('dark');
-  localStorage.setItem('smart_theme', dark ? 'dark' : 'light');
-  document.getElementById('themeBtn').textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('smart_theme',dark?'dark':'light');
+  document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
 }
-if(localStorage.getItem('smart_theme') === 'dark') {
+if(localStorage.getItem('smart_theme')==='dark') {
   document.body.classList.add('dark');
-  document.getElementById('themeBtn').textContent = '☀️';
+  document.getElementById('themeBtn').textContent='☀️';
 }
 
-/* ---------------- TABS ---------------- */
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+/* TABS */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
 });
 
-/* ---------------- CALCULATOR ---------------- */
-let expression = '';
-let finished = false;
-let history = [];
+/* CALCULATOR */
+let expression='';
+let finished=false;
+let history=[];
 
 try {
-  const saved = JSON.parse(localStorage.getItem('smart_history') || '[]');
-  history = Array.isArray(saved) ? saved.filter(x =>
-    x && typeof x.expr === 'string' &&
-    typeof x.result === 'string'
-  ).slice(0,20) : [];
-} catch(e) { history = []; }
+  const saved=JSON.parse(localStorage.getItem('smart_history')||'[]');
+  history=Array.isArray(saved)?saved.filter(x=>
+    x && typeof x.expr==='string' &&
+    typeof x.result==='string'
+  ).slice(0,20):[];
+} catch(e) {history=[];}
 
-const answer = document.getElementById('answer');
-const expDisplay = document.getElementById('expression');
+const answer=document.getElementById('answer');
+const expDisplay=document.getElementById('expression');
 
 function prettyExpression(s) {
   return s.replace(/\*/g,'×').replace(/\//g,'÷');
 }
 function showCalc() {
-  expDisplay.textContent = expression ? prettyExpression(expression) : 'गणना शुरू करें';
-  answer.textContent = expression || '0';
+  expDisplay.textContent=expression?prettyExpression(expression):'गणना शुरू करें';
+  answer.textContent=expression||'0';
 }
 function press(value) {
-  if(answer.textContent === 'Error') clearCalc();
-  if(finished && /[0-9.(]/.test(value[0])) expression = '';
-  finished = false;
+  if(answer.textContent==='Error') clearCalc();
+  if(finished && /[0-9.(]/.test(value[0])) expression='';
+  finished=false;
+  if(expression.length>100) return;
 
-  if(expression.length > 100) return;
-
-  if(value === '.') {
-    const part = expression.split(/[+\-*/()%()]/).pop();
+  if(value==='.') {
+    const part=expression.split(/[+\-*/%()]/).pop();
     if(part.includes('.')) return;
-    if(!part) value = '0.';
+    if(!part) value='0.';
   }
-  expression += value;
+  expression+=value;
   showCalc();
 }
 function clearCalc() {
-  expression = '';
-  finished = false;
+  expression='';
+  finished=false;
   showCalc();
 }
 function backspace() {
-  expression = expression.slice(0,-1);
-  finished = false;
+  expression=expression.slice(0,-1);
+  finished=false;
   showCalc();
 }
 
-/* सुरक्षित गणना: बिना eval या Function के */
+/* सुरक्षित गणना */
 function evaluateMath(source) {
-  const tokens = source.match(/\d+(?:\.\d*)?|\.\d+|[+\-*/%()]|./g) || [];
-  let pos = 0;
+  const tokens=source.match(/\d+(?:\.\d*)?|\.\d+|[+\-*/%()]|./g)||[];
+  let pos=0;
 
-  function peek() { return tokens[pos]; }
-  function take() { return tokens[pos++]; }
+  function peek(){return tokens[pos];}
+  function take(){return tokens[pos++];}
 
   function primary() {
-    let t = peek();
-    if(t === '+' || t === '-') {
+    let t=peek();
+    if(t==='+'||t==='-') {
       take();
-      let v = primary();
-      return t === '-' ? -v : v;
+      let v=primary();
+      return t==='-'?-v:v;
     }
-    if(t === '(') {
+    if(t==='(') {
       take();
-      let v = addSub();
-      if(take() !== ')') throw Error('Bracket');
+      let v=addSub();
+      if(take()!==')') throw Error('Bracket');
       return v;
     }
-    if(!t || !/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(t))
+    if(!t||!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(t))
       throw Error('Number');
     take();
     return Number(t);
   }
 
   function mulDiv() {
-    let v = primary();
-    while(peek() === '*' || peek() === '/' || peek() === '%') {
-      let op = take();
-      let n = primary();
-      if((op === '/' || op === '%') && n === 0)
-        throw Error('Zero');
-      if(op === '*') v *= n;
-      if(op === '/') v /= n;
-      if(op === '%') v %= n;
+    let v=primary();
+    while(peek()==='*'||peek()==='/'||peek()==='%') {
+      let op=take(),n=primary();
+      if((op==='/'||op==='%')&&n===0) throw Error('Zero');
+      if(op==='*') v*=n;
+      if(op==='/') v/=n;
+      if(op==='%') v%=n;
     }
     return v;
   }
 
   function addSub() {
-    let v = mulDiv();
-    while(peek() === '+' || peek() === '-') {
-      let op = take();
-      let n = mulDiv();
-      v = op === '+' ? v+n : v-n;
+    let v=mulDiv();
+    while(peek()==='+'||peek()==='-') {
+      let op=take(),n=mulDiv();
+      v=op==='+'?v+n:v-n;
     }
     return v;
   }
 
-  const result = addSub();
-  if(pos !== tokens.length || !Number.isFinite(result))
-    throw Error('Invalid');
+  const result=addSub();
+  if(pos!==tokens.length||!Number.isFinite(result)) throw Error('Invalid');
   return result;
 }
 
 function calculate() {
   if(!expression) return;
   try {
-    const result = evaluateMath(expression);
-    const rounded = Number(result.toPrecision(12));
-    const original = expression;
-    const output = String(rounded);
+    const result=evaluateMath(expression);
+    const output=String(Number(result.toPrecision(12)));
+    const original=expression;
 
     history.unshift({expr:original,result:output});
-    history = history.slice(0,20);
+    history=history.slice(0,20);
     localStorage.setItem('smart_history',JSON.stringify(history));
 
-    expression = output;
-    finished = true;
-    expDisplay.textContent = prettyExpression(original) + ' =';
-    answer.textContent = output;
+    expression=output;
+    finished=true;
+    expDisplay.textContent=prettyExpression(original)+' =';
+    answer.textContent=output;
     renderHistory();
   } catch(e) {
-    answer.textContent = 'Error';
-    expDisplay.textContent = 'गलत गणना';
-  }
-}
-
-function squareRoot() {
-  try {
-    const value = expression ? evaluateMath(expression) : 0;
-    if(value < 0) throw Error();
-    expression = String(Number(Math.sqrt(value).toPrecision(12)));
-    finished = true;
-    expDisplay.textContent = '√';
-    answer.textContent = expression;
-  } catch(e) { answer.textContent = 'Error'; }
-}
-function squareNumber() {
-  try {
-    const value = expression ? evaluateMath(expression) : 0;
-    expression = String(Number((value*value).toPrecision(12)));
-    finished = true;
-    expDisplay.textContent = 'x²';
-    answer.textContent = expression;
-  } catch(e) { answer.textContent = 'Error'; }
-}
-
-async function copyAnswer() {
-  const value = answer.textContent;
-  if(value === 'Error' || value === '0') return;
-  try {
-    await navigator.clipboard.writeText(value);
-    expDisplay.textContent = '✓ कॉपी हो गया';
-  } catch(e) {
-    expDisplay.textContent = 'कॉपी उपलब्ध नहीं है';
+    answer.textContent='Error';
+    expDisplay.textContent='गलत गणना';
   }
 }
 
 function renderHistory() {
-  const list = document.getElementById('historyList');
-  list.innerHTML = '';
+  const list=document.getElementById('historyList');
+  list.innerHTML='';
   if(!history.length) {
-    list.innerHTML = '<div class="empty">अभी कोई पुराना हिसाब नहीं है।</div>';
+    list.innerHTML='<div class="empty">अभी कोई पुराना हिसाब नहीं है।</div>';
     return;
   }
-  history.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'history-item';
-    div.textContent = prettyExpression(item.expr) + ' = ' + item.result;
+  history.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='history-item';
+    div.textContent=prettyExpression(item.expr)+' = '+item.result;
     list.appendChild(div);
   });
 }
 function clearHistory() {
-  history = [];
+  history=[];
   localStorage.removeItem('smart_history');
   renderHistory();
 }
 renderHistory();
 
-/* KEYBOARD SUPPORT */
-document.addEventListener('keydown', e => {
+/* KEYBOARD */
+document.addEventListener('keydown',e=>{
   if(document.activeElement.matches('input,select')) return;
   if(/^[0-9.+\-*/%()]$/.test(e.key)) press(e.key);
-  else if(e.key === 'Enter' || e.key === '=') calculate();
-  else if(e.key === 'Backspace') backspace();
-  else if(e.key === 'Escape') clearCalc();
+  else if(e.key==='Enter'||e.key==='=') calculate();
+  else if(e.key==='Backspace') backspace();
+  else if(e.key==='Escape') clearCalc();
 });
 
-/* ---------------- DATE HELPERS ---------------- */
+/* DATE HELPERS */
 function dateUTC(value) {
-  const [y,m,d] = value.split('-').map(Number);
+  const [y,m,d]=value.split('-').map(Number);
   return new Date(Date.UTC(y,m-1,d));
 }
 function dateStringUTC(date) {
   return date.toISOString().slice(0,10);
 }
 function formatINR(value) {
-  return '₹' + Number(value).toLocaleString('en-IN',{
+  return '₹'+Number(value).toLocaleString('en-IN',{
     maximumFractionDigits:2
   });
 }
-function showResult(id, html) {
-  const box = document.getElementById(id);
-  box.innerHTML = html;
-  box.style.display = 'block';
+function showResult(id,html) {
+  const box=document.getElementById(id);
+  box.innerHTML=html;
+  box.style.display='block';
 }
 
-/* ---------------- AGE CALCULATOR ---------------- */
-document.getElementById('targetDate').value = dateStringUTC(new Date());
+/* AGE */
+document.getElementById('targetDate').value=dateStringUTC(new Date());
 
 function calculateAge() {
-  const b = document.getElementById('birthDate').value;
-  const t = document.getElementById('targetDate').value;
-
-  if(!b || !t) {
+  const b=document.getElementById('birthDate').value;
+  const t=document.getElementById('targetDate').value;
+  if(!b||!t) {
     alert('कृपया दोनों तारीख दर्ज करें।');
     return;
   }
 
-  let birth = dateUTC(b);
-  let target = dateUTC(t);
-
-  if(birth > target) {
+  let birth=dateUTC(b),target=dateUTC(t);
+  if(birth>target) {
     alert('जन्म तारीख, लक्ष्य तारीख से बाद की नहीं हो सकती।');
     return;
   }
 
-  const totalDays = (target-birth)/86400000;
+  const totalDays=(target-birth)/86400000;
+  let years=target.getUTCFullYear()-birth.getUTCFullYear();
+  let months=target.getUTCMonth()-birth.getUTCMonth();
+  let days=target.getUTCDate()-birth.getUTCDate();
 
-  let years = target.getUTCFullYear()-birth.getUTCFullYear();
-  let months = target.getUTCMonth()-birth.getUTCMonth();
-  let days = target.getUTCDate()-birth.getUTCDate();
-
-  if(days < 0) {
+  if(days<0) {
     months--;
-    const prevMonthDays = new Date(
-      Date.UTC(target.getUTCFullYear(),target.getUTCMonth(),0)
-    ).getUTCDate();
-    days += prevMonthDays;
+    days+=new Date(Date.UTC(
+      target.getUTCFullYear(),target.getUTCMonth(),0
+    )).getUTCDate();
   }
-  if(months < 0) {
+  if(months<0) {
     years--;
-    months += 12;
+    months+=12;
   }
-
-  const totalMonths = years*12+months;
-  const weeks = Math.floor(totalDays/7);
 
   showResult('ageResult',`
     <div class="result-row"><span>सटीक आयु</span>
     <strong>${years} वर्ष ${months} महीने ${days} दिन</strong></div>
-    <div class="result-row"><span>कुल महीने</span><strong>${totalMonths}</strong></div>
-    <div class="result-row"><span>कुल सप्ताह</span><strong>${weeks}</strong></div>
+    <div class="result-row"><span>कुल महीने</span><strong>${years*12+months}</strong></div>
+    <div class="result-row"><span>कुल सप्ताह</span><strong>${Math.floor(totalDays/7)}</strong></div>
     <div class="result-row"><span>कुल दिन</span><strong>${totalDays.toLocaleString('en-IN')}</strong></div>
   `);
 }
 
-/* ---------------- INTEREST CALCULATOR ---------------- */
+/* INTEREST */
 function calculateInterest() {
-  const P = Number(document.getElementById('principal').value);
-  const R = Number(document.getElementById('rate').value);
-  const M = Number(document.getElementById('months').value || 0);
-  const D = Number(document.getElementById('days').value || 0);
+  const P=Number(document.getElementById('principal').value);
+  const R=Number(document.getElementById('rate').value);
+  const M=Number(document.getElementById('months').value||0);
+  const D=Number(document.getElementById('days').value||0);
 
-  if(!Number.isFinite(P) || !Number.isFinite(R) ||
-     P<=0 || R<=0 || M<0 || D<0 ||
-     !Number.isInteger(M) || !Number.isInteger(D) ||
-     M+D===0) {
+  if(!Number.isFinite(P)||!Number.isFinite(R)||
+     P<=0||R<=0||M<0||D<0||
+     !Number.isInteger(M)||!Number.isInteger(D)||M+D===0) {
     alert('कृपया सही मूलधन, ब्याज दर और समय दर्ज करें।');
     return;
   }
 
-  const monthInterest = P*R*M/100;
-  const dayInterest = P*R*D/3000;
-  const totalInterest = monthInterest+dayInterest;
-  const total = P+totalInterest;
+  const mi=P*R*M/100;
+  const di=P*R*D/3000;
+  const totalInterest=mi+di;
 
   showResult('interestResult',`
-    <div class="result-row"><span>महीनों का ब्याज</span><strong>${formatINR(monthInterest)}</strong></div>
-    <div class="result-row"><span>दिनों का ब्याज</span><strong>${formatINR(dayInterest)}</strong></div>
+    <div class="result-row"><span>महीनों का ब्याज</span><strong>${formatINR(mi)}</strong></div>
+    <div class="result-row"><span>दिनों का ब्याज</span><strong>${formatINR(di)}</strong></div>
     <div class="result-row"><span>मूलधन</span><strong>${formatINR(P)}</strong></div>
     <div class="result-row"><span>कुल ब्याज</span><strong>${formatINR(totalInterest)}</strong></div>
-    <div class="result total">कुल वापस राशि: ${formatINR(total)}</div>
+    <div class="result total">कुल वापस राशि: ${formatINR(P+totalInterest)}</div>
     <div style="font-size:11px;color:var(--muted)">
       नोट: एक महीना 30 दिन मानकर साधारण ब्याज निकाला गया है।
     </div>
   `);
 }
 
-/* ---------------- GST CALCULATOR ---------------- */
+/* GST */
 function calculateGST() {
-  const amount = Number(document.getElementById('gstAmount').value);
-  const rate = Number(document.getElementById('gstRate').value);
-  const type = document.getElementById('gstType').value;
+  const amount=Number(document.getElementById('gstAmount').value);
+  const rate=Number(document.getElementById('gstRate').value);
+  const type=document.getElementById('gstType').value;
 
-  if(!Number.isFinite(amount) || amount<=0) {
+  if(!Number.isFinite(amount)||amount<=0) {
     alert('कृपया सही राशि दर्ज करें।');
     return;
   }
 
   let base,gst,total;
-
-  if(type === 'add') {
-    base = amount;
-    gst = amount*rate/100;
-    total = base+gst;
+  if(type==='add') {
+    base=amount;
+    gst=amount*rate/100;
+    total=base+gst;
   } else {
-    total = amount;
-    base = amount/(1+rate/100);
-    gst = total-base;
+    total=amount;
+    base=amount/(1+rate/100);
+    gst=total-base;
   }
 
   showResult('gstResult',`
@@ -848,30 +808,30 @@ function calculateGST() {
   `);
 }
 
-/* ---------------- EMI CALCULATOR ---------------- */
+/* EMI */
 function calculateEMI() {
-  const P = Number(document.getElementById('loan').value);
-  const annualRate = Number(document.getElementById('emiRate').value);
-  const years = Number(document.getElementById('emiYears').value);
+  const P=Number(document.getElementById('loan').value);
+  const annualRate=Number(document.getElementById('emiRate').value);
+  const years=Number(document.getElementById('emiYears').value);
 
-  if(!Number.isFinite(P) || !Number.isFinite(annualRate) ||
-     !Number.isFinite(years) || P<=0 || annualRate<0 || years<=0) {
+  if(!Number.isFinite(P)||!Number.isFinite(annualRate)||
+     !Number.isFinite(years)||P<=0||annualRate<0||years<=0) {
     alert('कृपया सही लोन राशि, ब्याज दर और अवधि दर्ज करें।');
     return;
   }
 
-  const n = Math.round(years*12);
-  const r = annualRate/1200;
-
+  const n=Math.round(years*12);
+  const r=annualRate/1200;
   let emi;
-  if(r === 0) emi = P/n;
+
+  if(r===0) emi=P/n;
   else {
-    const factor = Math.pow(1+r,n);
-    emi = P*r*factor/(factor-1);
+    const factor=Math.pow(1+r,n);
+    emi=P*r*factor/(factor-1);
   }
 
-  const totalPayment = emi*n;
-  const totalInterest = totalPayment-P;
+  const totalPayment=emi*n;
+  const totalInterest=totalPayment-P;
 
   showResult('emiResult',`
     <div class="result-row"><span>मासिक EMI</span><strong>${formatINR(emi)}</strong></div>
@@ -881,6 +841,7 @@ function calculateEMI() {
     <div class="result total">कुल भुगतान: ${formatINR(totalPayment)}</div>
   `);
 }
+
 </script>
 </body>
 </html>
